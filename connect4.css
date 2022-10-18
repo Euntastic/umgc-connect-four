@@ -1,0 +1,85 @@
+/* game board table */
+
+:root {
+  /* Testing Color Scheme */
+  /* Very Experimental */
+  --70s-teal: #75c8ae;
+  --70s-brown: #5a3d2b;
+  --70s-beige: #ffecb4;
+  --70s-red-orange: #e5771e;
+  --70s-orange: #f4a127;
+}
+
+* {
+  font-family: "Roboto Slab", serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: rgb(255, 255, 255);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 1) 0%,
+    var(--70s-brown) 25%,
+    var(--70s-brown) 75%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  color: var(--70s-teal);
+
+  font-size: 6em;
+  font-weight: 900;
+  /* width: 100%; */
+
+  margin-top: 5vh;
+  margin-bottom: 1vh;
+  text-decoration: underline;
+  text-decoration-color: var(--70s-red-orange);
+}
+
+#game {
+  background-color: var(--70s-brown);
+  display: flex;
+
+  align-items: center;
+  flex-direction: column;
+  /* justify-content: center; */
+
+  width: 60%;
+  height: 100vh;
+}
+
+#board td {
+  width: 50px;
+  height: 50px;
+  border: solid 1px var(--70s-beige);
+}
+
+/* pieces are div within game table cells: draw as colored circles */
+
+.piece {
+  /* TODO: make into circles */
+  border-radius: 50%;
+  background-color: red;
+  margin: 5px;
+  width: 80%;
+  height: 80%;
+}
+
+/* TODO: make pieces red/blue,  depending on player 1/2 piece */
+
+/* column-top is table row of clickable areas for each column */
+
+#column-top td {
+  border: dashed 1px lightgray;
+}
+
+#column-top td:hover {
+  background-color: gold;
+}
