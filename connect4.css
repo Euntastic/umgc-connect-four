@@ -75,12 +75,20 @@ h1 {
 
 /* TODO: make pieces red/blue,  depending on player 1/2 piece */
 
+.player-1 {
+  background-color: red;
+}
+
+.player-2 {
+  background-color: blue;
+}
+
 /* column-top is table row of clickable areas for each column */
 
 #column-top td {
   border: dashed 1px lightgray;
 }
 
-#column-top td:hover {
+/* #column-top td:hover {
   background-color: gold;
-}
+} */

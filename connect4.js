@@ -32,6 +32,8 @@ function makeHtmlBoard() {
   const top = document.createElement('tr');
   top.setAttribute('id', 'column-top');
   htmlBoard.addEventListener('click', handleClick);
+  htmlBoard.addEventListener('mouseover', togglePiece);
+  htmlBoard.addEventListener('mouseout', togglePiece);
 
   // Create individual cells and append to the top table row
   // With variable id attributes 'col-n'
@@ -49,8 +51,8 @@ function makeHtmlBoard() {
     for (let x = 0; x < WIDTH; x++) {
       const cell = document.createElement('td');
       cell.setAttribute('id', `cell-${y}-${x}`);
-      cell.addEventListener('mouseover', hoverPiece);
-      cell.addEventListener('mouseout', clearPiece);
+      // cell.addEventListener('mouseover', hoverPiece);
+      // cell.addEventListener('mouseout', clearPiece);
       row.append(cell);
     }
     htmlBoard.append(row);
@@ -71,6 +73,11 @@ function placeInTable(y) {
   // TODO: make a div and insert into correct table cell
   for (let i = HEIGHT - 1; i >= 0; i--) {
     if (!board[i][y]) {
+      const pieceDiv = document.createElement('div');
+      pieceDiv.classList.add('player-' + currPlayer);
+      pieceDiv.classList.add('piece');
+      const emptyCellDiv = document.querySelector('#cell-' + i + '-' + y);
+      emptyCellDiv.append(pieceDiv);
       board[i][y] = currPlayer;
       return;
     } else {
@@ -82,19 +89,21 @@ function placeInTable(y) {
 /** endGame: announce game end */
 function endGame(msg) {
   // TODO: pop up alert message
+  alert(msg);
 }
 
-/** hoverPiece: Hover the player's piece over the respective column. */
-function hoverPiece(event) {
-  const targetElement = event.target;
-  const columnTop = document.querySelector('#col-' + targetElement.id.split('-')[2]);
-  columnTop.classList.toggle('piece');
-}
+/** togglePiece: Toggles the player's piece over the respective column. */
+function togglePiece(event) {
+  let targetElement = event.target;
+  const targetTagName = event.target.tagName;
+  if (targetTagName == 'TABLE') return;
 
-/** clearPiece: Removes the player's piece over the respective column. */
-function clearPiece(event) {
-  const targetElement = event.target;
-  const columnTop = document.querySelector('#col-' + targetElement.id.split('-')[2]);
+  console.log(targetElement);
+  if (targetTagName == 'DIV') targetElement = event.target.parentNode;
+
+  const targetIdArray = targetElement.id.split('-');
+  const columnIndex = targetIdArray.length;
+  const columnTop = document.querySelector('#col-' + targetIdArray[columnIndex - 1]);
   columnTop.classList.toggle('piece');
 }
 
@@ -131,7 +140,7 @@ function handleClick(event) {
   // place piece in board and add to HTML table
   // TODO: add line to update in-memory board
   placeInTable(y);
-  colorBoard();
+  // colorBoard();
   console.log(board);
 
   // check for win
