@@ -3,6 +3,7 @@
 :root {
   /* Testing Color Scheme */
   /* Very Experimental */
+  --player-color: red;
   --70s-teal: #75c8ae;
   --70s-brown: #5a3d2b;
   --70s-beige: #ffecb4;
@@ -51,7 +52,7 @@ h1 {
   flex-direction: column;
   /* justify-content: center; */
 
-  width: 60%;
+  width: 600px;
   height: 100vh;
 }
 
@@ -66,7 +67,7 @@ h1 {
 .piece {
   /* TODO: make into circles */
   border-radius: 50%;
-  background-color: red;
+  background-color: var(--player-color);
   margin: 5px;
   width: 80%;
   height: 80%;
