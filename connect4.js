@@ -11,35 +11,36 @@ const HEIGHT = 6;
 let currPlayer = 1; // active player: 1 or 2
 const board = makeBoard(WIDTH, HEIGHT); // array of rows, each row is array of cells  (board[y][x])
 
-const rootProperty = document.querySelector(':root');
+const rootProperty = document.querySelector(":root");
 
 /** makeBoard: create in-JS board array structure
  *    boardArray = array of rows, each row is array of cells  (boardArray[y][x])
  */
 function makeBoard(width, height) {
   const boardArray = [];
-  for (let i = 0; i < height; i++) boardArray.push(new Array(width));
+  for (let i = 0; i < height; i++) boardArray.push(new Array(width).fill(0));
+  console.log(boardArray);
   return boardArray;
 }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
 function makeHtmlBoard() {
-  const htmlBoard = document.querySelector('#board');
+  const htmlBoard = document.querySelector("#board");
 
   // Create the top table row with:
   //  id='column-top'
   //  click event => handleClick function.
-  const top = document.createElement('tr');
-  top.setAttribute('id', 'column-top');
-  htmlBoard.addEventListener('click', handleClick);
-  htmlBoard.addEventListener('mouseover', togglePiece);
-  htmlBoard.addEventListener('mouseout', togglePiece);
+  const top = document.createElement("tr");
+  top.setAttribute("id", "column-top");
+  htmlBoard.addEventListener("click", handleClick);
+  htmlBoard.addEventListener("mouseover", togglePiece);
+  htmlBoard.addEventListener("mouseout", togglePiece);
 
   // Create individual cells and append to the top table row
   // With variable id attributes 'col-n'
   for (let i = 0; i < WIDTH; i++) {
-    const headCell = document.createElement('td');
-    headCell.setAttribute('id', 'col-' + i);
+    const headCell = document.createElement("td");
+    headCell.setAttribute("id", "col-" + i);
     top.append(headCell);
   }
 
@@ -47,12 +48,10 @@ function makeHtmlBoard() {
 
   // Create individual cells in a HEIGHT x WIDTH array.
   for (let y = 0; y < HEIGHT; y++) {
-    const row = document.createElement('tr');
+    const row = document.createElement("tr");
     for (let x = 0; x < WIDTH; x++) {
-      const cell = document.createElement('td');
-      cell.setAttribute('id', `cell-${y}-${x}`);
-      // cell.addEventListener('mouseover', hoverPiece);
-      // cell.addEventListener('mouseout', clearPiece);
+      const cell = document.createElement("td");
+      cell.setAttribute("id", `cell-${y}-${x}`);
       row.append(cell);
     }
     htmlBoard.append(row);
@@ -63,31 +62,28 @@ function makeHtmlBoard() {
 function findSpotForCol(x) {
   // TODO: write the real version of this, rather than always returning 0
   for (let i = HEIGHT - 1; i >= 0; i--) {
-    if (!board[i][x]) return x;
+    if (!board[i][x]) return i;
   }
   return null;
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
-function placeInTable(y) {
+function placeInTable(row, col) {
   // TODO: make a div and insert into correct table cell
-  for (let i = HEIGHT - 1; i >= 0; i--) {
-    if (!board[i][y]) {
-      const pieceDiv = document.createElement('div');
-      pieceDiv.classList.add('player-' + currPlayer);
-      pieceDiv.classList.add('piece');
-      const emptyCellDiv = document.querySelector('#cell-' + i + '-' + y);
-      emptyCellDiv.append(pieceDiv);
-      board[i][y] = currPlayer;
-      return;
-    } else {
-      console.log('Next Space');
-    }
-  }
+  const pieceDiv = document.createElement("div");
+  pieceDiv.classList.add("player-" + currPlayer);
+  pieceDiv.classList.add("piece");
+  const emptyCellDiv = document.querySelector("#cell-" + row + "-" + col);
+  emptyCellDiv.append(pieceDiv);
+  board[row][col] = currPlayer;
 }
 
 /** endGame: announce game end */
 function endGame(msg) {
+  const htmlBoard = document.querySelector("#board");
+  htmlBoard.removeEventListener("click", handleClick);
+  htmlBoard.removeEventListener("mouseover", togglePiece);
+  htmlBoard.removeEventListener("mouseout", togglePiece);
   // TODO: pop up alert message
   alert(msg);
 }
@@ -95,53 +91,38 @@ function endGame(msg) {
 /** togglePiece: Toggles the player's piece over the respective column. */
 function togglePiece(event) {
   let targetElement = event.target;
-  const targetTagName = event.target.tagName;
-  if (targetTagName == 'TABLE') return;
 
-  console.log(targetElement);
-  if (targetTagName == 'DIV') targetElement = event.target.parentNode;
+  // Use element.matches();
+  if (targetElement.matches("table")) return;
+  if (targetElement.matches("div")) targetElement = targetElement.parentNode;
 
-  const targetIdArray = targetElement.id.split('-');
+  const targetIdArray = targetElement.id.split("-");
   const columnIndex = targetIdArray.length;
-  const columnTop = document.querySelector('#col-' + targetIdArray[columnIndex - 1]);
-  columnTop.classList.toggle('piece');
+  const columnTop = document.querySelector(
+    "#col-" + targetIdArray[columnIndex - 1]
+  );
+  columnTop.classList.toggle("piece");
 }
 
 function setPlayerColor(player) {
-  if (player == 1) rootProperty.style.setProperty('--player-color', 'red');
-  else rootProperty.style.setProperty('--player-color', 'blue');
-}
-
-// Fills out board with color.
-// MAYBE RELOGIC THIS
-function colorBoard() {
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x++) {
-      if (board[y][x]) {
-        const cell = document.querySelector(`#cell-${y}-${x}`);
-        if (board[y][x] == 1) cell.style.backgroundColor = 'red';
-        else cell.style.backgroundColor = 'blue';
-      }
-    }
-  }
+  if (player == 1) rootProperty.style.setProperty("--player-color", "red");
+  else rootProperty.style.setProperty("--player-color", "blue");
 }
 
 /** handleClick: handle click of column to play piece */
 function handleClick(event) {
   // get x from ID of clicked cell
   const currElement = event.target;
-  const x = currElement.id.split('-')[2];
+  const columnindex = currElement.id.split("-")[2];
 
-  if (event.target.tagName == 'TABLE') return;
+  if (event.target.tagName == "TABLE") return;
   // get next spot in column (if none, ignore click)
-  let y = findSpotForCol(x);
-  if (y === null) return;
+  let rowIndex = findSpotForCol(columnindex);
+  if (rowIndex === null) return;
 
   // place piece in board and add to HTML table
   // TODO: add line to update in-memory board
-  placeInTable(y);
-  // colorBoard();
-  console.log(board);
+  placeInTable(rowIndex, columnindex);
 
   // check for win
   if (checkForWin()) {
@@ -150,6 +131,11 @@ function handleClick(event) {
 
   // check for tie
   // TODO: check if all cells in board are filled; if so call, call endGame
+  for (let row of board) {
+    for (let element of row) {
+
+    }
+  }
 
   // switch players
   // TODO: switch currPlayer 1 <-> 2
@@ -181,24 +167,43 @@ function checkForWin() {
 
   for (var y = 0; y < HEIGHT; y++) {
     for (var x = 0; x < WIDTH; x++) {
-      const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-      const vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
-      const diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
-      const diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
+      const horiz = [
+        [y, x],
+        [y, x + 1],
+        [y, x + 2],
+        [y, x + 3],
+      ];
+      const vert = [
+        [y, x],
+        [y + 1, x],
+        [y + 2, x],
+        [y + 3, x],
+      ];
+      const diagDR = [
+        [y, x],
+        [y + 1, x + 1],
+        [y + 2, x + 2],
+        [y + 3, x + 3],
+      ];
+      const diagDL = [
+        [y, x],
+        [y + 1, x - 1],
+        [y + 2, x - 2],
+        [y + 3, x - 3],
+      ];
 
-      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL))
         return true;
-      }
     }
   }
 }
 
 // Style Site with added Text and Elements
-document.addEventListener('DOMContentLoaded', () => {
-  const gameDiv = document.querySelector('#game');
-  const boardDiv = document.querySelector('#board');
-  const titleHeader = document.createElement('h1');
-  titleHeader.innerText = 'Gravitrips';
+document.addEventListener("DOMContentLoaded", () => {
+  const gameDiv = document.querySelector("#game");
+  const boardDiv = document.querySelector("#board");
+  const titleHeader = document.createElement("h1");
+  titleHeader.innerText = "Gravitrips";
   gameDiv.insertBefore(titleHeader, boardDiv);
 });
 
